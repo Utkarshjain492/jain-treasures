@@ -78,7 +78,6 @@
                 <input type="password" id="password" name="password" autocomplete="off"><br><br>
                 <input type="submit" value="Login">
             </form>
-            <!-- <a href="login/reset-password/smtp.php">Forgot Password?</a> -->
             <p>Don't have an account? <a href="login/register.php">Register</a></p>
         </div>
     </div>
