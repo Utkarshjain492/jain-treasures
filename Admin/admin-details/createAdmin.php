@@ -1,0 +1,148 @@
+<html>
+<head>
+    <title>Register</title>
+    <style>
+        body{
+            font-family: Arial, sans-serif;
+            background-image: url(/BG/index_bg.png);
+            background-position: center;
+            background-size: cover;
+            overflow-x: hidden;
+        }
+        .container{
+            width: 30%;
+            margin: 40px auto;
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .header{
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+        .header h1{
+            margin: 0;
+        }
+        .form{
+            padding: 20px;
+        }
+        .form label{
+            display: block;
+            margin-bottom: 10px;
+        }
+        .form input[type="text"], .form input[type="email"], .form input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+        }
+        .form input[type="submit"]{
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .form input[type="submit"]:hover{
+            background-color: #444;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Admin</h1>
+        </div>
+        <div class="form">
+            <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+                <label for="fullName">Name:</label>
+                <input type="text" id="fullName" name="fullName" autocomplete="off"><br><br>
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" autocomplete="off"><br><br>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" autocomplete="off"><br><br>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" autocomplete="off"><br><br>
+                <label for="confirm_password">Confirm Password:</label>
+                <input type="password" id="confirm_password" name="confirm_password" autocomplete="off"><br><br>
+                <input type="submit" name="submit" value="Add Admin">
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+
+<?php
+
+$host = "localhost";
+$user = "root";
+$pass = "";
+$db = "acmegrade";
+
+$conn = new mysqli($host, $user, $pass, $db);
+
+if($conn->connect_error){
+    die("Connection failed: " . $conn->connect_error);
+}
+
+if(isset($_POST['submit'])){
+    $fullName = $_POST['fullName'];
+    $username = $_POST['username'];
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+    $confirm_password = $_POST['confirm_password'];
+
+    $stmt = $conn->prepare("SELECT * FROM admin WHERE username = ? OR email = ?");
+    $stmt->bind_param("ss", $username, $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if(empty($username) || empty($email) || empty($password) || empty($confirm_password)){
+        $error = "Please fill in all fields";
+    } 
+    elseif(!filter_var($email, FILTER_VALIDATE_EMAIL)){
+        $error = "Invalid email address";
+    }
+    elseif($password != $confirm_password){
+        $error = "Passwords do not match";
+    } 
+    elseif($result -> num_rows > 0){
+        $error = "Admin with this name or email already exists.";
+    }
+    else{
+        $query = "INSERT INTO admin(fullName, username, email, password) VALUES (?, ?, ?, ?)";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("ssss", $fullName, $username, $email, $password);
+        $stmt->execute();
+
+        if($stmt->affected_rows > 0){
+            $success = "Admin registered successfully";
+            header('location: adminDetails.php');
+        }
+        else{
+            $error = "Failed to register admin";
+        }
+    }
+}
+
+$conn->commit();
+$conn->close();
+
+?>
+
+<?php 
+    if(isset($error)){ 
+?>
+    <p style="color: red; position: relative; left: 450px; bottom: 80px;"><?php echo $error; ?></p>
+<?php 
+    } 
+    elseif(isset($success)){ 
+?>
+    <p style="color: green; position: relative; left: 450px; bottom: 80px;"><?php echo $success; ?></p>
+<?php 
+    }
+?>

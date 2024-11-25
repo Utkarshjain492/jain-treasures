@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products</title>
+    <style>
+
+        body{
+            overflow-x: hidden;
+        }
+
+        .addingProductContainer{
+            position: relative;
+            top: 100px;
+            left: 400px;
+            background-color: #fff;
+            width: fit-content;
+            height: 250px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .addingProductContainer h1{
+            display: flex;
+            position: relative;
+            bottom: 20px;
+            background-color: #333;
+            color: #fff;
+            justify-content: center;
+        }
+
+        .addingProduct input{
+            position: relative;
+            margin: 10px;
+            padding: 20px;
+            bottom: 20px;
+        }
+        
+        .addingProduct button{
+            display: block;
+            position: relative;
+            font-size: 15px;
+            top: -100px;
+            left: 165px;
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .addingProduct button:hover{
+            background-color: #444;
+        }
+
+        .chooseImg{
+            display: block;
+            width: 180px;
+        }
+
+        .specification{
+            position: relative;
+            left: 230px;
+            top: -100px;
+        }
+
+        .delete{
+            position: relative;
+            top: 10px;
+            font-size: 15px;
+            background-color: #444;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            margin: 10px;
+        }
+        
+        .addingCart{
+            position: relative;
+            top: 10px;
+            font-size: 15px;
+            background-color: #444;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .addingCart:hover,
+        .delete:hover{
+            color: black;
+            background-color: #fff;
+        }
+
+        .card{
+            display: inline-block;
+            margin: 30px;
+            padding: 20px;
+            width: fit-content;
+            background-color: #333;
+            color: #fff;
+        }
+
+        .product{
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .price{
+            position: relative;
+            font-size: 20px;
+            top: 5px;
+            color: gold;
+        }
+    </style>
+</head>
+<body>
+
+    <form action="uploadProduct.php" method="post" enctype="multipart/form-data" target="bottom">
+
+        <div class="addingProductContainer">
+            <h1>Add your Product here.</h1>
+            <div class="addingProduct">
+                <input id="form-control" type="text" name="name" placeholder="Add the Product Name">
+                <input id="form-control" type="number" name="price" min="1" placeholder="Add the Product Price">
+                <input class="chooseImg" id="form-control" type="file" name="productImg" accept=".jpg, .jpeg, .png">
+                <input class="specification" id="form-control" type="text" name="detail" placeholder="Product Specifications" max="50000">
+                <button onclick="addProduct()">Add Product</button>
+            </div>
+        </div>
+
+    </form>
+
+    <div id="parent"></div>
+
+    <script>
+
+        const productList=[
+            
+            {
+                product : "Realme 11x 5G",
+                price : "15500",
+            }
+            
+        ]
+            
+        const parentObj = document.getElementById("parent");
+        const productObj = document.getElementById("product");
+        const priceObj = document.getElementById("price");
+        
+        render();
+        
+        function render(){
+            productObj.value="";
+            priceObj.value="";
+            parentObj.innerHTML="";
+            for(i=0;i<productList.length;i++){
+                parentObj.innerHTML += `<div class='card'>
+                    <div class='product'>${productList[i].product}</div>
+                    <div class='price'>₹${productList[i].price}</div>
+
+                    <div class="action">
+                        <button class='addingCart'>Add to Cart</button>
+                        <button onclick="deleteProduct(${i})" class='delete'>Delete</button>
+                    </div>
+                </div>`
+            }
+        }
+        
+        function addProduct(){
+            tempObj = {
+                        product:productObj.value, 
+                        price:priceObj.value
+                      }
+
+            productList.push(tempObj);
+            render();
+            productObj.value="";
+            priceObj.value="";
+        }
+
+        function deleteProduct(){
+            res = confirm(`Are you sure you want to delete '${productList[i].name}'`);
+            
+            if(res){
+                productList.splice(ind,1);
+                render();
+                alert(`Your product '${productList[i].name}' is successfully deleted.`);
+            }
+        }
+
+    </script>
+</body>
+</html>
